@@ -113,6 +113,13 @@ LE              <=
   *  \n \t \b \f, the result is c.
   *
   */
+"{" |
+"}" |
+"(" |
+")" |
+";" |
+":"             { return (int) yytext[0]; }
+"\n"            { curr_lineno += 1; }
 
 
 %%
