@@ -60,7 +60,31 @@ extern YYSTYPE cool_yylval;
  * Define names for regular expressions here.
  */
 
+CLASS          class
+ELSE            else
+FI              fi
+IN              in
+INHERITS        inherits
+LET             let
+LOOP            loop
+POOL            pool
+THEN            then
+WHILE           while
+CASE            case
+ESAC            esac
+OF              of
+NEW             new
+ISVOID          isvoid
+STR_CONST       "[\w\\]+"
+INT_CONST       0|1\d+
+BOOL_CONST      t[rR][uU][eE]|f[aA][lL][sS][eE]
+NOT             not
+LET_STMT        let
+
 DARROW          =>
+ASSIGN          <-
+LE              <=
+
 
 %%
 
