@@ -97,6 +97,9 @@ LE              <=
   *  The multiple-character operators.
   */
 {DARROW}        { return (DARROW); }
+{ASSIGN}        { return (ASSIGN); }
+{LE}            { return (LE); }
+
 
  /*
   * Keywords are case-insensitive except for the values true and false,
