@@ -62,6 +62,7 @@ extern YYSTYPE cool_yylval;
 
 CLASS           class
 ELSE            else
+IF              if
 FI              fi
 IN              in
 INHERITS        inherits
@@ -75,7 +76,7 @@ ESAC            esac
 OF              of
 NEW             new
 ISVOID          isvoid
-INT_CONST       0|1\d+
+INT_CONST       [0-9]+
 BOOL_CONST      t[rR][uU][eE]|f[aA][lL][sS][eE]
 NOT             not
 
@@ -112,8 +113,21 @@ STR_END			\"
   * which must begin with a lower-case letter.
   */
 {CLASS} { return (CLASS); }
-{LET} { return (LET); }
+{ELSE} { return (ELSE); }
+{FI} { return (FI); }
+{IF} { return (IF); }
+{IN} { return (IN); }
 {INHERITS} { return (INHERITS); }
+{LET} { return (LET); }
+{LOOP} { return (LOOP); }
+{POOL} { return (POOL); }
+{THEN} { return (THEN); }
+{WHILE} { return (WHILE); }
+{CASE} { return (CASE); }
+{ESAC} { return (ESAC); }
+{OF} { return (OF); }
+{NEW} { return (NEW); }
+{ISVOID} { return (ISVOID); }
 
  /*
   *  String constants (C syntax)
@@ -125,6 +139,8 @@ STR_END			\"
 "}" |
 "(" |
 ")" |
+"." |
+"," |
 ";" |
 ":"             { return (int) yytext[0]; }
 "\n"            { curr_lineno += 1; }
