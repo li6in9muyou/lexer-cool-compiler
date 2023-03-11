@@ -56,7 +56,7 @@ extern YYSTYPE cool_yylval;
 
 %}
 
-%x STRING_LITERAL BLOCK_COMMENT LINE_COMMENT
+%x STRING_LITERAL BLOCK_COMMENT LINE_COMMENT UNTIL_QUOTE UNTIL_NEWLINE
 
 %%
 
@@ -101,11 +101,30 @@ extern YYSTYPE cool_yylval;
 
 "\n"            { curr_lineno += 1; }
 
+<UNTIL_QUOTE>{
+	[^\"]* {}
+
+	\" { BEGIN 0; }
+}
+
 \" { string_buf_ptr = string_buf; BEGIN STRING_LITERAL; }
 <STRING_LITERAL>{
-	[^\"\\] {
+	[^\"\\\n] {
 		*string_buf_ptr = *yytext;
 		string_buf_ptr++;
+
+		if (string_buf_ptr - string_buf > 1024) {
+			BEGIN UNTIL_QUOTE;
+			cool_yylval.error_msg = "String constant too long";
+			return (ERROR);
+		}
+	}
+
+	\n {
+		BEGIN 0;
+		curr_lineno += 1;
+		cool_yylval.error_msg = "Unterminated string constant";
+		return (ERROR);
 	}
 
 	\\. {
@@ -179,6 +198,11 @@ f[aA][lL][sS][eE] {
 
 [ \t]* {
 	/* object id must starts with lowercase letter */
+}
+
+. {
+	cool_yylval.error_msg = yytext;
+	return (ERROR);
 }
 
 %%
