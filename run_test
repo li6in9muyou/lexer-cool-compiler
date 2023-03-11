@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+make lexer
+
+for cl in "$@"
+do 
+    input_cl=../../examples/$cl
+    echo
+    echo
+    echo INPUT: $input_cl
+    echo --- actual 
+    echo +++ expected 
+    diff -u <(./lexer $input_cl) <(../../bin/lexer $input_cl)
+    echo END OF INPUT: $input_cl
+    echo No output means PASS
+done
