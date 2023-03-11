@@ -157,43 +157,55 @@ STR_END			\"
 ":"             { return (int) yytext[0]; }
 "\n"            { curr_lineno += 1; }
 
-{STR_START} {
+\" {
 	string_buf_ptr = string_buf;
 	BEGIN STR;
 }
-<STR>[^\"\\] {
-	*string_buf_ptr = *yytext;
-	string_buf_ptr++;
-}
-<STR>\\. {
-	switch(yytext[1]) {
-	case 'n': *string_buf_ptr++ = '\n'; break;
-	case 'r': *string_buf_ptr++ = '\r'; break;
-	case 't': *string_buf_ptr++ = '\t'; break;
-	case 'b': *string_buf_ptr++ = '\b'; break;
-	case 'f': *string_buf_ptr++ = '\f'; break;
-	case '\\':
-	case '\'':
-	case '\"':
-		*string_buf_ptr++ = yytext[1]; break;
+<STR>{
+	[^\"\\] {
+		*string_buf_ptr = *yytext;
+		string_buf_ptr++;
+	}
+
+	\\. {
+		switch(yytext[1]) {
+		case 'n': *string_buf_ptr++ = '\n'; break;
+		case 'r': *string_buf_ptr++ = '\r'; break;
+		case 't': *string_buf_ptr++ = '\t'; break;
+		case 'b': *string_buf_ptr++ = '\b'; break;
+		case 'f': *string_buf_ptr++ = '\f'; break;
+		case '\\':
+		case '\'':
+		case '\"':
+			*string_buf_ptr++ = yytext[1]; break;
+		}
+	}
+
+	\" {
+		*string_buf_ptr = '\0';
+		cool_yylval.symbol = stringtable.add_string(string_buf);
+		BEGIN 0;
+		return (STR_CONST);
 	}
 }
-<STR>{STR_END} {
-	*string_buf_ptr = '\0';
-	cool_yylval.symbol = stringtable.add_string(string_buf);
-	BEGIN 0;
-	return (STR_CONST);
-};
 
 "(*" { BEGIN BLOCK_COMMENT; }
-<BLOCK_COMMENT>[^*\n]* {}
-<BLOCK_COMMENT>"*"+[^*)\n]* {}
-<BLOCK_COMMENT>\n { curr_lineno += 1; }
-<BLOCK_COMMENT>"*)" { BEGIN 0; }
+<BLOCK_COMMENT>{
+	[^*\n]* {}
+
+	"*"+[^*)\n]* {}
+
+	\n { curr_lineno += 1; }
+
+	"*)" { BEGIN 0; }
+}
 
 "--" { BEGIN LINE_COMMENT; }
-<LINE_COMMENT>.* {}
-<LINE_COMMENT>\n { curr_lineno += 1; BEGIN 0; }
+<LINE_COMMENT>{
+	.* {}
+
+	\n { curr_lineno += 1; BEGIN 0; }
+}
 
 {INT_CONST} {
 	cool_yylval.symbol = inttable.add_string(yytext);
