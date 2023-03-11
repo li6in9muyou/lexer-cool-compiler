@@ -60,26 +60,9 @@ extern YYSTYPE cool_yylval;
  * Define names for regular expressions here.
  */
 
-CLASS           class|Class
-ELSE            else
-IF              if
-FI              fi
-IN              in
-INHERITS        inherits
-LET             let
-LOOP            loop
-POOL            pool
-THEN            then
-WHILE           while
-CASE            case
-ESAC            esac
-OF              of
-NEW             new
-ISVOID          isvoid
 INT_CONST       [0-9]+
 TRUE_LITERAL    t[rR][uU][eE]
 FALSE_LITERAL   f[aA][lL][sS][eE]
-NOT             not
 
 DARROW          =>
 ASSIGN          <-
@@ -115,23 +98,23 @@ STR_END			\"
   * Keywords are case-insensitive except for the values true and false,
   * which must begin with a lower-case letter.
   */
-{CLASS} { return (CLASS); }
-{ELSE} { return (ELSE); }
-{FI} { return (FI); }
-{IF} { return (IF); }
-{IN} { return (IN); }
-{INHERITS} { return (INHERITS); }
-{LET} { return (LET); }
-{LOOP} { return (LOOP); }
-{POOL} { return (POOL); }
-{THEN} { return (THEN); }
-{WHILE} { return (WHILE); }
-{CASE} { return (CASE); }
-{ESAC} { return (ESAC); }
-{OF} { return (OF); }
-{NEW} { return (NEW); }
-{ISVOID} { return (ISVOID); }
-"not" { return (NOT); }
+"class"|"Class" 		{ return (CLASS); }
+"else" 					{ return (ELSE); }
+"fi" 					{ return (FI); }
+"if" 					{ return (IF); }
+"in" 					{ return (IN); }
+"inherits"				{ return (INHERITS); }
+"let"					{ return (LET); }
+"loop" 					{ return (LOOP); }
+"pool" 					{ return (POOL); }
+"then" 					{ return (THEN); }
+"while" 				{ return (WHILE); }
+"case" 					{ return (CASE); }
+"esac"					{ return (ESAC); }
+"of" 					{ return (OF); }
+"new" 					{ return (NEW); }
+"isvoid"				{ return (ISVOID); }
+"not" 					{ return (NOT); }
 
  /*
   *  String constants (C syntax)
