@@ -85,8 +85,8 @@ DARROW          =>
 ASSIGN          <-
 LE              <=
 
-TYPE_ID			[A-Z][a-zA-Z_]*
-OBJECT_ID		[a-z][a-zA-Z_]*
+TYPE_ID			[A-Z][a-zA-Z_0-9]*
+OBJECT_ID		[a-z][a-zA-Z_0-9]*
 
 WHITE_SPACE		[ \t]*
 
