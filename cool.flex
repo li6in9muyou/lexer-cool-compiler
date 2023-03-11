@@ -60,7 +60,7 @@ extern YYSTYPE cool_yylval;
  * Define names for regular expressions here.
  */
 
-CLASS          class
+CLASS           class
 ELSE            else
 FI              fi
 IN              in
@@ -75,16 +75,22 @@ ESAC            esac
 OF              of
 NEW             new
 ISVOID          isvoid
-STR_CONST       "[\w\\]+"
 INT_CONST       0|1\d+
 BOOL_CONST      t[rR][uU][eE]|f[aA][lL][sS][eE]
 NOT             not
-LET_STMT        let
 
 DARROW          =>
 ASSIGN          <-
 LE              <=
 
+TYPE_ID			[A-Z][a-zA-Z_]*
+OBJECT_ID		[a-z][a-zA-Z_]*
+
+WHITE_SPACE		[ \t]*
+
+STR_START		\"
+STR_END			\"
+%x STR
 
 %%
 
@@ -105,11 +111,13 @@ LE              <=
   * Keywords are case-insensitive except for the values true and false,
   * which must begin with a lower-case letter.
   */
-
+{CLASS} { return (CLASS); }
+{LET} { return (LET); }
+{INHERITS} { return (INHERITS); }
 
  /*
   *  String constants (C syntax)
-  *  Escape sequence \c is accepted for all characters c. Except for 
+  *  Escape sequence \c is accepted for all characters c. Except for
   *  \n \t \b \f, the result is c.
   *
   */
@@ -121,5 +129,34 @@ LE              <=
 ":"             { return (int) yytext[0]; }
 "\n"            { curr_lineno += 1; }
 
+{STR_START} {
+	yymore();
+	BEGIN STR;
+}
+<STR>[^\"] {
+	yymore();
+}
+<STR>{STR_END} {
+	cool_yylval.symbol = stringtable.add_string(yytext);
+	BEGIN 0;
+	return (STR_CONST);
+};
+
+{INT_CONST} {
+	cool_yylval.symbol = inttable.add_string(yytext);
+	return (INT_CONST);
+}
+
+{TYPE_ID} {
+	cool_yylval.symbol = idtable.add_string(yytext);
+	return (TYPEID);
+}
+
+{OBJECT_ID} {
+	cool_yylval.symbol = idtable.add_string(yytext);
+	return (OBJECTID);
+}
+
+{WHITE_SPACE} {/* ignore white spaces */}
 
 %%
