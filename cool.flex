@@ -60,7 +60,7 @@ extern YYSTYPE cool_yylval;
  * Define names for regular expressions here.
  */
 
-CLASS           class
+CLASS           class|Class
 ELSE            else
 IF              if
 FI              fi
@@ -90,9 +90,11 @@ OBJECT_ID		[a-z][a-zA-Z_0-9]*
 
 WHITE_SPACE		[ \t]*
 
+%x STR BLOCK_COMMENT LINE_COMMENT
+
 STR_START		\"
 STR_END			\"
-%x STR
+
 
 %%
 
@@ -147,6 +149,10 @@ STR_END			\"
 "-" |
 "=" |
 "+" |
+"<" |
+"/" |
+"*" |
+"@" |
 ":"             { return (int) yytext[0]; }
 "\n"            { curr_lineno += 1; }
 
@@ -174,6 +180,16 @@ STR_END			\"
 	BEGIN 0;
 	return (STR_CONST);
 };
+
+"(*" { BEGIN BLOCK_COMMENT; }
+<BLOCK_COMMENT>[^*\n]* {}
+<BLOCK_COMMENT>"*"+[^*)\n]* {}
+<BLOCK_COMMENT>\n { curr_lineno += 1; }
+<BLOCK_COMMENT>"*)" { BEGIN 0; }
+
+"--" { BEGIN LINE_COMMENT; }
+<LINE_COMMENT>.* {}
+<LINE_COMMENT>\n { curr_lineno += 1; BEGIN 0; }
 
 {INT_CONST} {
 	cool_yylval.symbol = inttable.add_string(yytext);
