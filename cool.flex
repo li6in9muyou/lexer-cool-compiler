@@ -127,6 +127,12 @@ extern YYSTYPE cool_yylval;
 		return (ERROR);
 	}
 
+	<<EOF>> {
+		cool_yylval.error_msg = "EOF in string constant";
+		BEGIN 0;
+		return (ERROR);
+	}
+
 	\\. {
 		switch(yytext[1]) {
 		case 'n': *string_buf_ptr++ = '\n'; break;
@@ -158,6 +164,18 @@ extern YYSTYPE cool_yylval;
 	\n { curr_lineno += 1; }
 
 	"*)" { BEGIN 0; }
+
+	<<EOF>> {
+		cool_yylval.error_msg = "EOF in comment";
+		BEGIN 0;
+		return (ERROR);
+	}
+}
+
+
+"*)" {
+	cool_yylval.error_msg = "Unmatched *)";
+	return (ERROR);
 }
 
 "--" { BEGIN LINE_COMMENT; }
