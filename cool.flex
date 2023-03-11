@@ -56,48 +56,14 @@ extern YYSTYPE cool_yylval;
 
 %}
 
-/*
- * Define names for regular expressions here.
- */
-
-INT_CONST       [0-9]+
-TRUE_LITERAL    t[rR][uU][eE]
-FALSE_LITERAL   f[aA][lL][sS][eE]
-
-DARROW          =>
-ASSIGN          <-
-LE              <=
-
-TYPE_ID			[A-Z][a-zA-Z_0-9]*
-OBJECT_ID		[a-z][a-zA-Z_0-9]*
-
-WHITE_SPACE		[ \t]*
-
-%x STR BLOCK_COMMENT LINE_COMMENT
-
-STR_START		\"
-STR_END			\"
-
+%x STRING_LITERAL BLOCK_COMMENT LINE_COMMENT
 
 %%
 
- /*
-  *  Nested comments
-  */
+"=>"       { return (DARROW); }
+"<-"       { return (ASSIGN); }
+"<="       { return (LE); }
 
-
- /*
-  *  The multiple-character operators.
-  */
-{DARROW}        { return (DARROW); }
-{ASSIGN}        { return (ASSIGN); }
-{LE}            { return (LE); }
-
-
- /*
-  * Keywords are case-insensitive except for the values true and false,
-  * which must begin with a lower-case letter.
-  */
 "class"|"Class" 		{ return (CLASS); }
 "else" 					{ return (ELSE); }
 "fi" 					{ return (FI); }
@@ -116,12 +82,6 @@ STR_END			\"
 "isvoid"				{ return (ISVOID); }
 "not" 					{ return (NOT); }
 
- /*
-  *  String constants (C syntax)
-  *  Escape sequence \c is accepted for all characters c. Except for
-  *  \n \t \b \f, the result is c.
-  *
-  */
 "{" |
 "}" |
 "(" |
@@ -138,13 +98,11 @@ STR_END			\"
 "*" |
 "@" |
 ":"             { return (int) yytext[0]; }
+
 "\n"            { curr_lineno += 1; }
 
-\" {
-	string_buf_ptr = string_buf;
-	BEGIN STR;
-}
-<STR>{
+\" { string_buf_ptr = string_buf; BEGIN STRING_LITERAL; }
+<STRING_LITERAL>{
 	[^\"\\] {
 		*string_buf_ptr = *yytext;
 		string_buf_ptr++;
@@ -190,31 +148,37 @@ STR_END			\"
 	\n { curr_lineno += 1; BEGIN 0; }
 }
 
-{INT_CONST} {
+[0-9]+ {
+	/* integers */
 	cool_yylval.symbol = inttable.add_string(yytext);
 	return (INT_CONST);
 }
 
-{TYPE_ID} {
+[A-Z][a-zA-Z_0-9]* {
+	/* type id must start with uppercase letter */
 	cool_yylval.symbol = idtable.add_string(yytext);
 	return (TYPEID);
 }
 
-{TRUE_LITERAL} {
+t[rR][uU][eE] {
+	/* boolean literal for true and false */
 	cool_yylval.boolean = 1;
 	return (BOOL_CONST);
 }
 
-{FALSE_LITERAL} {
+f[aA][lL][sS][eE] {
 	cool_yylval.boolean = 0;
 	return (BOOL_CONST);
 }
 
-{OBJECT_ID} {
+[a-z][a-zA-Z_0-9]* {
+	/* object id must start with lowercase letter */
 	cool_yylval.symbol = idtable.add_string(yytext);
 	return (OBJECTID);
 }
 
-{WHITE_SPACE} {/* ignore white spaces */}
+[ \t]* {
+	/* object id must starts with lowercase letter */
+}
 
 %%
