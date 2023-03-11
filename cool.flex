@@ -130,14 +130,16 @@ STR_END			\"
 "\n"            { curr_lineno += 1; }
 
 {STR_START} {
-	yymore();
+	string_buf_ptr = string_buf;
 	BEGIN STR;
 }
 <STR>[^\"] {
-	yymore();
+	*string_buf_ptr = *yytext;
+	string_buf_ptr++;
 }
 <STR>{STR_END} {
-	cool_yylval.symbol = stringtable.add_string(yytext);
+	*string_buf_ptr = '\0';
+	cool_yylval.symbol = stringtable.add_string(string_buf);
 	BEGIN 0;
 	return (STR_CONST);
 };
