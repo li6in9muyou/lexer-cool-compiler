@@ -133,9 +133,19 @@ STR_END			\"
 	string_buf_ptr = string_buf;
 	BEGIN STR;
 }
-<STR>[^\"] {
+<STR>[^\"\\] {
 	*string_buf_ptr = *yytext;
 	string_buf_ptr++;
+}
+<STR>\\. {
+	switch(yytext[1]) {
+	case 'n': *string_buf_ptr++ = '\n'; break;
+	case 'r': *string_buf_ptr++ = '\r'; break;
+	case '\\':
+	case '\'':
+	case '\"':
+		*string_buf_ptr++ = yytext[1]; break;
+	}
 }
 <STR>{STR_END} {
 	*string_buf_ptr = '\0';
