@@ -77,7 +77,8 @@ OF              of
 NEW             new
 ISVOID          isvoid
 INT_CONST       [0-9]+
-BOOL_CONST      t[rR][uU][eE]|f[aA][lL][sS][eE]
+TRUE_LITERAL    t[rR][uU][eE]
+FALSE_LITERAL   f[aA][lL][sS][eE]
 NOT             not
 
 DARROW          =>
@@ -178,6 +179,16 @@ STR_END			\"
 {TYPE_ID} {
 	cool_yylval.symbol = idtable.add_string(yytext);
 	return (TYPEID);
+}
+
+{TRUE_LITERAL} {
+	cool_yylval.boolean = 1;
+	return (BOOL_CONST);
+}
+
+{FALSE_LITERAL} {
+	cool_yylval.boolean = 0;
+	return (BOOL_CONST);
 }
 
 {OBJECT_ID} {
