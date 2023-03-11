@@ -131,6 +131,7 @@ STR_END			\"
 {OF} { return (OF); }
 {NEW} { return (NEW); }
 {ISVOID} { return (ISVOID); }
+"not" { return (NOT); }
 
  /*
   *  String constants (C syntax)
