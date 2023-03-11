@@ -169,6 +169,9 @@ STR_END			\"
 	switch(yytext[1]) {
 	case 'n': *string_buf_ptr++ = '\n'; break;
 	case 'r': *string_buf_ptr++ = '\r'; break;
+	case 't': *string_buf_ptr++ = '\t'; break;
+	case 'b': *string_buf_ptr++ = '\b'; break;
+	case 'f': *string_buf_ptr++ = '\f'; break;
 	case '\\':
 	case '\'':
 	case '\"':
