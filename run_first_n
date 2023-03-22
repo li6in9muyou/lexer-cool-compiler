@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+input_dir="$1"
+file_cnt=$(ls $input_dir --sort size -r | grep cl$ | wc -l)
+n="${2:-$file_cnt}"
+echo "$input_dir: " FOUND "$file_cnt" FILES
+echo
+./run_test $(\
+    ls $input_dir --sort size -r | grep cl$ \
+    | head -n $n \
+    | sed 's@^@'"$input_dir"'/@'\
+)

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+./run_first_n $EXAMPLE_DIR/lexer $1

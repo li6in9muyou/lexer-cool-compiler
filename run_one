@@ -9,7 +9,7 @@ make lexer
 
 for cl in "$@"
 do 
-    input_cl=../../examples/$cl
+    input_cl="$cl"
     diff -u --color --label actual <(./lexer $input_cl) --label expected <(../../bin/lexer $input_cl)
     if [[ "$?" -eq 0 ]]; then
       printf "${GREEN}PASS${NC}\t"
@@ -18,3 +18,4 @@ do
     fi
     printf "INPUT: ${input_cl}\n"
 done
+
