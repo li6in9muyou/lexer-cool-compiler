@@ -148,18 +148,14 @@ unsigned int block_comment_nested_level = 0;
 
 	\\. {
 		switch(yytext[1]) {
-		case '\r': *string_buf_ptr++ = '\r'; break;
 		case '\t': *string_buf_ptr++ = '\t'; break;
 		case '\b': *string_buf_ptr++ = '\b'; break;
 		case '\f': *string_buf_ptr++ = '\f'; break;
 		case 'n': *string_buf_ptr++ = '\n'; break;
-		case 'r': *string_buf_ptr++ = '\r'; break;
 		case 't': *string_buf_ptr++ = '\t'; break;
 		case 'b': *string_buf_ptr++ = '\b'; break;
 		case 'f': *string_buf_ptr++ = '\f'; break;
-		case '\\':
-		case '\'':
-		case '\"':
+		default:
 			*string_buf_ptr++ = yytext[1]; break;
 		}
 	}
