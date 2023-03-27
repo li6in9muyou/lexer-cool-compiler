@@ -249,7 +249,7 @@ f[aA][lL][sS][eE] {
 	return (OBJECTID);
 }
 
-[ \t]* {}
+[ \t\f\013\015]* {}
 
 . {
 	cool_yylval.error_msg = yytext;
