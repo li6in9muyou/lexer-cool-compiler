@@ -64,23 +64,23 @@ unsigned int block_comment_nested_level = 0;
 "<-"       { return (ASSIGN); }
 "<="       { return (LE); }
 
-"class"|"Class" 		{ return (CLASS); }
-"else" 					{ return (ELSE); }
-"fi" 					{ return (FI); }
-"if" 					{ return (IF); }
-"in" 					{ return (IN); }
-"inherits"				{ return (INHERITS); }
-"let"					{ return (LET); }
-"loop" 					{ return (LOOP); }
-"pool" 					{ return (POOL); }
-"then" 					{ return (THEN); }
-"while" 				{ return (WHILE); }
-"case" 					{ return (CASE); }
-"esac"					{ return (ESAC); }
-"of" 					{ return (OF); }
-"new" 					{ return (NEW); }
-"isvoid"				{ return (ISVOID); }
-"not" 					{ return (NOT); }
+(?i:class) 		        { return (CLASS); }
+(?i:else) 				{ return (ELSE); }
+(?i:fi) 				{ return (FI); }
+(?i:if) 				{ return (IF); }
+(?i:in) 				{ return (IN); }
+(?i:inherits)			{ return (INHERITS); }
+(?i:let)				{ return (LET); }
+(?i:loop) 				{ return (LOOP); }
+(?i:pool) 				{ return (POOL); }
+(?i:then) 				{ return (THEN); }
+(?i:while) 				{ return (WHILE); }
+(?i:case) 				{ return (CASE); }
+(?i:esac)				{ return (ESAC); }
+(?i:of) 				{ return (OF); }
+(?i:new) 				{ return (NEW); }
+(?i:isvoid)				{ return (ISVOID); }
+(?i:not) 				{ return (NOT); }
 
 "{" |
 "}" |
