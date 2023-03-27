@@ -102,46 +102,52 @@ unsigned int block_comment_nested_level = 0;
 "\n"            { curr_lineno += 1; }
 
 <UNTIL_QUOTE>{
-	[^\"]* {}
+	[^\"\n]* {}
 
+	\n { curr_lineno += 1; BEGIN 0; }
 	\" { BEGIN 0; }
 }
 
 \" { string_buf_ptr = string_buf; BEGIN STRING_LITERAL; }
 <STRING_LITERAL>{
-	[^\"\\\n] {
-		*string_buf_ptr = *yytext;
-		string_buf_ptr++;
+	/* special characters */
 
-		if (string_buf_ptr - string_buf > 1024) {
-			BEGIN UNTIL_QUOTE;
-			cool_yylval.error_msg = "String constant too long";
-			return (ERROR);
-		}
+	/* closing quote */
+	\" {
+		*string_buf_ptr = '\0';
+		cool_yylval.symbol = stringtable.add_string(string_buf);
+		BEGIN 0;
+		return (STR_CONST);
 	}
 
-	\n {
-		BEGIN 0;
-		curr_lineno += 1;
-		cool_yylval.error_msg = "Unterminated string constant";
+	/* null and escaped null */
+	"\0" {
+		BEGIN UNTIL_QUOTE;
+		cool_yylval.error_msg = "String contains null character.";
 		return (ERROR);
 	}
-
+	
 	\\\0 {
 		BEGIN UNTIL_QUOTE;
 		cool_yylval.error_msg = "String contains escaped null character.";
 		return (ERROR);
 	}
 
-	<<EOF>> {
-		cool_yylval.error_msg = "EOF in string constant";
+	/* rejects naked newline, accepts escaped newline */
+	\n {
 		BEGIN 0;
+		curr_lineno += 1;
+		cool_yylval.error_msg = "Unterminated string constant";
 		return (ERROR);
+	}
+	
+	\\\n {
+		*string_buf_ptr++ = '\n';
+		curr_lineno += 1;
 	}
 
 	\\. {
 		switch(yytext[1]) {
-		case '\n': *string_buf_ptr++ = '\n'; break;
 		case '\r': *string_buf_ptr++ = '\r'; break;
 		case '\t': *string_buf_ptr++ = '\t'; break;
 		case '\b': *string_buf_ptr++ = '\b'; break;
@@ -158,11 +164,23 @@ unsigned int block_comment_nested_level = 0;
 		}
 	}
 
-	\" {
-		*string_buf_ptr = '\0';
-		cool_yylval.symbol = stringtable.add_string(string_buf);
+	<<EOF>> {
+		cool_yylval.error_msg = "EOF in string constant";
 		BEGIN 0;
-		return (STR_CONST);
+		return (ERROR);
+	}
+
+	/* end of special character */
+
+	. {
+		*string_buf_ptr = *yytext;
+		string_buf_ptr++;
+
+		if (string_buf_ptr - string_buf > 1024) {
+			BEGIN UNTIL_QUOTE;
+			cool_yylval.error_msg = "String constant too long";
+			return (ERROR);
+		}
 	}
 }
 
