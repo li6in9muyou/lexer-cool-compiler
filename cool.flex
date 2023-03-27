@@ -102,10 +102,10 @@ unsigned int block_comment_nested_level = 0;
 "\n"            { curr_lineno += 1; }
 
 <DISCARD_UNTIL_NEWLINE_OR_QUOTE>{
-	[^\"\n]* {}
-
 	\n { curr_lineno += 1; BEGIN 0; }
 	\" { BEGIN 0; }
+
+	. {}
 }
 
 \" { string_buf_ptr = string_buf; BEGIN STRING_LITERAL; }
@@ -152,6 +152,7 @@ unsigned int block_comment_nested_level = 0;
         }
 	}
 
+    /* escaped characters */
 	\\. {
 		switch(yytext[1]) {
 		case 'n': *string_buf_ptr++ = '\n'; break;
@@ -207,15 +208,15 @@ unsigned int block_comment_nested_level = 0;
 	}
 
 	\n { curr_lineno += 1; }
-	/* end of special characters */
-
-	. {}
 
 	<<EOF>> {
 		cool_yylval.error_msg = "EOF in comment";
 		BEGIN 0;
 		return (ERROR);
 	}
+	/* end of special characters */
+
+	. {}
 }
 
 
@@ -226,9 +227,9 @@ unsigned int block_comment_nested_level = 0;
 
 "--" { BEGIN LINE_COMMENT; }
 <LINE_COMMENT>{
-	.* {}
-
 	\n { curr_lineno += 1; BEGIN 0; }
+
+	.* {}
 }
 
 [0-9]+ {
