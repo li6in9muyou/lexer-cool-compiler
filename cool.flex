@@ -53,7 +53,7 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
-
+unsigned int block_comment_nested_level = 0;
 %}
 
 %x STRING_LITERAL BLOCK_COMMENT LINE_COMMENT UNTIL_QUOTE UNTIL_NEWLINE
@@ -166,15 +166,28 @@ extern YYSTYPE cool_yylval;
 	}
 }
 
-"(*" { BEGIN BLOCK_COMMENT; }
+"(*" { 
+	block_comment_nested_level = 1;
+	BEGIN BLOCK_COMMENT; 
+}
 <BLOCK_COMMENT>{
-	[^*\n]* {}
+	[^*\n(]* {}
 
 	"*"+[^*)\n]* {}
+	"("+[^*\n]* {}
 
 	\n { curr_lineno += 1; }
 
-	"*)" { BEGIN 0; }
+	"(*" {
+		block_comment_nested_level += 1;
+	}
+
+	"*)" { 
+		block_comment_nested_level -= 1;
+		if(block_comment_nested_level == 0) {
+			BEGIN 0; 
+		}
+	}
 
 	<<EOF>> {
 		cool_yylval.error_msg = "EOF in comment";
