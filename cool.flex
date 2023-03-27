@@ -144,6 +144,12 @@ unsigned int block_comment_nested_level = 0;
 	\\\n {
 		*string_buf_ptr++ = '\n';
 		curr_lineno += 1;
+
+        if (string_buf_ptr - string_buf > 1024) {
+            BEGIN DISCARD_UNTIL_NEWLINE_OR_QUOTE;
+            cool_yylval.error_msg = "String constant too long";
+            return (ERROR);
+        }
 	}
 
 	\\. {
@@ -155,6 +161,12 @@ unsigned int block_comment_nested_level = 0;
 		default:
 			*string_buf_ptr++ = yytext[1]; break;
 		}
+
+        if (string_buf_ptr - string_buf > 1024) {
+            BEGIN DISCARD_UNTIL_NEWLINE_OR_QUOTE;
+            cool_yylval.error_msg = "String constant too long";
+            return (ERROR);
+        }
 	}
 
 	<<EOF>> {
