@@ -56,7 +56,7 @@ extern YYSTYPE cool_yylval;
 unsigned int block_comment_nested_level = 0;
 %}
 
-%x STRING_LITERAL BLOCK_COMMENT LINE_COMMENT UNTIL_QUOTE UNTIL_NEWLINE
+%x STRING_LITERAL BLOCK_COMMENT LINE_COMMENT DISCARD_UNTIL_NEWLINE_OR_QUOTE UNTIL_NEWLINE
 
 %%
 
@@ -101,7 +101,7 @@ unsigned int block_comment_nested_level = 0;
 
 "\n"            { curr_lineno += 1; }
 
-<UNTIL_QUOTE>{
+<DISCARD_UNTIL_NEWLINE_OR_QUOTE>{
 	[^\"\n]* {}
 
 	\n { curr_lineno += 1; BEGIN 0; }
@@ -122,13 +122,13 @@ unsigned int block_comment_nested_level = 0;
 
 	/* null and escaped null */
 	"\0" {
-		BEGIN UNTIL_QUOTE;
+		BEGIN DISCARD_UNTIL_NEWLINE_OR_QUOTE;
 		cool_yylval.error_msg = "String contains null character.";
 		return (ERROR);
 	}
 	
 	\\\0 {
-		BEGIN UNTIL_QUOTE;
+		BEGIN DISCARD_UNTIL_NEWLINE_OR_QUOTE;
 		cool_yylval.error_msg = "String contains escaped null character.";
 		return (ERROR);
 	}
@@ -177,7 +177,7 @@ unsigned int block_comment_nested_level = 0;
 		string_buf_ptr++;
 
 		if (string_buf_ptr - string_buf > 1024) {
-			BEGIN UNTIL_QUOTE;
+			BEGIN DISCARD_UNTIL_NEWLINE_OR_QUOTE;
 			cool_yylval.error_msg = "String constant too long";
 			return (ERROR);
 		}
