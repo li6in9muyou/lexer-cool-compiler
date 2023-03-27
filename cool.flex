@@ -179,26 +179,25 @@ unsigned int block_comment_nested_level = 0;
 
 "(*" { 
 	block_comment_nested_level = 1;
-	BEGIN BLOCK_COMMENT; 
+	BEGIN BLOCK_COMMENT;
 }
 <BLOCK_COMMENT>{
-	[^*\n(]* {}
-
-	"*"+[^*)\n]* {}
-	"("+[^*\n]* {}
-
-	\n { curr_lineno += 1; }
-
+	/* special characters */
 	"(*" {
 		block_comment_nested_level += 1;
 	}
 
-	"*)" { 
+	"*)" {
 		block_comment_nested_level -= 1;
 		if(block_comment_nested_level == 0) {
-			BEGIN 0; 
+			BEGIN 0;
 		}
 	}
+
+	\n { curr_lineno += 1; }
+	/* end of special characters */
+
+	. {}
 
 	<<EOF>> {
 		cool_yylval.error_msg = "EOF in comment";
