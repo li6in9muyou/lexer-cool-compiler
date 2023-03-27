@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-run_first_n $EXAMPLE_DIR
-run_first_n $EXAMPLE_DIR/lexer
+
+./run_first_n $EXAMPLE_DIR
+./run_first_n $EXAMPLE_DIR/lexer
