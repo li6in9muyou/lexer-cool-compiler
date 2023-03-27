@@ -225,9 +225,7 @@ f[aA][lL][sS][eE] {
 	return (OBJECTID);
 }
 
-[ \t]* {
-	/* object id must starts with lowercase letter */
-}
+[ \t]* {}
 
 . {
 	cool_yylval.error_msg = yytext;
