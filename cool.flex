@@ -127,6 +127,12 @@ extern YYSTYPE cool_yylval;
 		return (ERROR);
 	}
 
+	\\\0 {
+		BEGIN UNTIL_QUOTE;
+		cool_yylval.error_msg = "String contains escaped null character.";
+		return (ERROR);
+	}
+
 	<<EOF>> {
 		cool_yylval.error_msg = "EOF in string constant";
 		BEGIN 0;
@@ -135,6 +141,11 @@ extern YYSTYPE cool_yylval;
 
 	\\. {
 		switch(yytext[1]) {
+		case '\n': *string_buf_ptr++ = '\n'; break;
+		case '\r': *string_buf_ptr++ = '\r'; break;
+		case '\t': *string_buf_ptr++ = '\t'; break;
+		case '\b': *string_buf_ptr++ = '\b'; break;
+		case '\f': *string_buf_ptr++ = '\f'; break;
 		case 'n': *string_buf_ptr++ = '\n'; break;
 		case 'r': *string_buf_ptr++ = '\r'; break;
 		case 't': *string_buf_ptr++ = '\t'; break;
